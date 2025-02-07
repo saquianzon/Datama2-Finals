@@ -6,30 +6,20 @@
   <FooterComponent />
 </template>
 
-<script></script>
+<script>
+import HeaderComponent from './components/Header.vue';
+import HeroComponent from './components/Hero.vue';
+import MenuComponent from './components/Menu.vue';
+import OrdersComponent from './components/Orders.vue';
+import FooterComponent from './components/Footer.vue';
 
-<style>
-
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-header {
-  background: black;
-  color: white;
-  padding: 10px 0;
-}
-.menu-grid {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-footer {
-  background: black;
-  color: white;
-  padding: 10px 0;
-}
-
-</style>
+export default {
+  components: {
+    HeaderComponent,
+    HeroComponent,
+    MenuComponent,
+    OrdersComponent,
+    FooterComponent
+  }
+};
+</script>
