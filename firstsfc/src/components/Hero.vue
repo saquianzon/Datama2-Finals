@@ -3,7 +3,7 @@
     <img src="/images/Chicken.png" alt="Inasal Chicken">
     <div class="hero-text">
       <h1>Dodoy's Grill House</h1>
-      <h3>Gutom ka? Order na! Abot ya, Lipay ka!</h3>
+      <h3>Gutom ka? Order na, abot sadya!</h3>
     </div>
   </section>
 </template>
