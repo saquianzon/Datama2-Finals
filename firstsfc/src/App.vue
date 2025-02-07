@@ -1,4 +1,6 @@
 <template>
+
+  <h1>Hello Vue!</h1>
   <HeaderComponent />
   <HeroComponent />
   <MenuComponent />
