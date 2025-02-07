@@ -1,15 +1,27 @@
 <template>
   <NavBar />
-  <HeroSection />
-  <MenuSection />
-  <OrderSection />
-  <FooterSection />
+  <Hero />
+  <Menu />
+  <Orders />
+  <Register />
+  <Login />
+  <Footer />
 </template>
 
-<script setup>
+<script>
 import NavBar from './components/NavBar.vue';
-import HeroSection from './components/HeroSection.vue';
-import MenuSection from './components/MenuSection.vue';
-import OrderSection from './components/OrderSection.vue';
-import FooterSection from './components/FooterSection.vue';
+import Hero from './components/Hero.vue';
+import Menu from './components/Menu.vue';
+import Orders from './components/Orders.vue';
+import Footer from './components/Footer.vue';
+
+export default {
+  components: {
+    NavBar,
+    Hero,
+    Menu,
+    Orders,
+    Footer
+  }
+};
 </script>
