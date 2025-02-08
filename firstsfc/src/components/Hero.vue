@@ -8,7 +8,7 @@
   </section>
 </template>
 
-<style scoped>
+<style>
 .hero {
   position: relative;
   width: 100%;
