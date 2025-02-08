@@ -2,14 +2,24 @@
   <section id="orders" class="orders-container">
     <h2>Place Your Order</h2>
     <form @submit.prevent="submitOrder">
-      <label for="name">Name:</label>
-      <input type="text" id="name" v-model="name" required />
+      <label for="name">First Name:</label>
+      <input type="text" id="firstName" v-model="firstName" required />
+
+      <label for="name">Last Name:</label>
+      <input type="text" id="lastName" v-model="lastName" required />
 
       <label for="phone">Phone:</label>
       <input type="text" id="phone" v-model="phone" required />
 
       <label for="address">Address:</label>
       <input type="text" id="address" v-model="address" required />
+
+      <label for="paymentMode">Mode of Payment:</label>
+      <select id="paymentMode" v-model="paymentMode" required>
+        <option value="">Select Payment Method</option>
+        <option value="Cash on Delivery">Cash on Delivery</option>
+        <option value="GCash">GCash</option>
+      </select>
 
       <div class="order-items">
         <h3>Your Order</h3>
@@ -23,6 +33,8 @@
         </div>
         <button type="button" class="add-btn" @click="addOrder">Add Another Dish</button>
       </div>
+
+      <br>
 
       <label for="extras">Additional Feedback:</label>
       <input type="text" id="extras" v-model="extras" placeholder="E.g. extra rice, calamansi, vinegar" />
@@ -47,6 +59,7 @@ export default {
       name: "",
       phone: "",
       address: "",
+      paymentMode: "", // New Payment Mode Field
       orders: [{ dish: this.selectedDish || "", quantity: 1 }],
       extras: "",
       dishes: [
@@ -83,18 +96,18 @@ export default {
       this.orders.splice(index, 1);
     },
     submitOrder() {
-      if (!this.name || !this.phone || !this.address || this.orders.some(order => !order.dish)) {
+      if (!this.firstName || !this.lastName || !this.phone || !this.address || !this.paymentMode || this.orders.some(order => !order.dish)) {
         alert("Please fill in all fields!");
         return;
       }
-      console.log("Order placed:", this.name, this.phone, this.address, this.orders, this.extras);
+      console.log("Order placed:", this.firstName, this.lastName, this.phone, this.address, this.paymentMode, this.orders, this.extras);
       alert("Order placed successfully!");
     }
   }
 };
 </script>
 
-<style>
+<<style>
 /* Updated background styling */
 .orders-container {
   background-color: #f8f9fa;

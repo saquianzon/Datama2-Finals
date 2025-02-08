@@ -1,14 +1,65 @@
 <template>
   <footer>
-    <p>&copy; 2025 Dodoy's Grill. All rights reserved.</p>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>Payment Options</h3>
+        <div class="payment-icons">
+          <img src="/images/gcash.png" alt="GCash" />
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <h3>Address</h3>
+        <p>245 P. Ocampo Ave., Corner Primo Rivera St., Brgy. Lapaz, Makati, Philippines</p>
+        <p><strong>Contact Phone (Makati):</strong> 0977-039-160</p>
+        <p><strong>Contact Phone (Cebu):</strong> 0991-209-5031</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>About Us</h3>
+        <p>We assure you will enjoy the authentic Chicken Inasal and other Ilonggo delicacies with the true taste of Bacolod in every bite! Kaon nata!</p>
+        <p>Come visit us in Makati or Cebu!</p>
+      </div>
+    </div>
   </footer>
 </template>
 
-<style scoped>
+<style>
 footer {
-  text-align: center;
-  padding: 15px;
-  background-color: #222;
+  background: url('/images/footer-bg.jpg') center/cover no-repeat, #0a0a0a;
   color: white;
+  padding: 30px 0;
+}
+
+p {
+  font-family: Arial, sans-serif;
+  font-size: 15px
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-section {
+  max-width: 300px;
+  text-align: left;
+}
+
+.footer-section h3 {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  border-bottom: 2px solid #ffffff;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.payment-icons img {
+  width: 40px;
+  margin-right: 10px;
+  filter: brightness(1.2);
 }
 </style>
