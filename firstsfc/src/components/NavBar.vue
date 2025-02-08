@@ -1,43 +1,34 @@
 <template>
-  <header class="navbar">
+  <header>
     <div class="logo">
       <img src="/images/logo.png" alt="Dodoy's Grill Logo">
     </div>
     <nav>
       <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#menu">Menu</a></li>
-        <li><a href="#orders">Orders</a></li>
-        <li><a href="#login">Login</a></li>
+        <li><router-link to="/">Home</router-link></li>
+        <li><router-link to="/menu">Menu</router-link></li>
+        <li><router-link to="/orders">Orders</router-link></li>
       </ul>
     </nav>
+    <div class="auth-buttons">
+      <router-link to="/login" class="btn">Login</router-link>
+      <router-link to="/register" class="btn">Register</router-link>
+    </div>
   </header>
 </template>
 
 <style scoped>
-.navbar {
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 20px;
   background: #222;
-  padding: 15px 30px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
+  color: white;
 }
 
 .logo img {
-  width: 140px; /* Adjust size as needed */
-  height: auto;
-  margin-right: 10px;
-}
-
-.logo span {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
+  width: 120px;
 }
 
 nav ul {
@@ -46,18 +37,16 @@ nav ul {
   gap: 20px;
 }
 
-nav ul li {
-  display: inline;
-}
-
-nav ul li a {
-  color: white;
+.auth-buttons .btn {
+  padding: 8px 15px;
+  background: #ffcc00;
+  color: black;
+  border-radius: 5px;
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
+  font-weight: bold;
 }
 
-nav ul li a:hover {
-  color: #ffcc00;
+.auth-buttons .btn:hover {
+  background: #ff9900;
 }
 </style>
