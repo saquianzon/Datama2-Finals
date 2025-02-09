@@ -1,7 +1,7 @@
 <template>
   <section id="orders" class="orders-container">
     <h2>Place Your Order</h2>
-    <form @submit.prevent="submitOrder">
+    <form @submit.prevent="placeOrder">
       <label for="firstName">First Name:</label>
       <input type="text" id="firstName" v-model="firstName" required />
 
@@ -11,8 +11,8 @@
       <label for="email">Email:</label>
       <input type="email" id="email" v-model="email" required />
 
-      <label for="phone">Phone:</label>
-      <input type="text" id="phone" v-model="phone" required />
+      <label for="phone_number">Phone:</label>
+      <input type="text" id="phone_number" v-model="phone_number" required />
 
       <label for="address">Address:</label>
       <input type="text" id="address" v-model="address" required />
@@ -28,22 +28,28 @@
         <h3>Your Order</h3>
         <div v-for="(order, index) in orders" :key="index" class="order-item">
           <select v-model="order.dish">
-            <option v-for="dish in dishes" :key="dish.id" :value="dish">{{ dish.name }}</option>
+            <option v-for="dish in dishes" :key="dish.d_id" :value="dish">
+              {{ dish.dish_name }} - ₱{{ dish.price }} (Stock: {{ dish.stock_quantity }})
+            </option>
           </select>
           <input type="number" v-model="order.quantity" min="1" required />
           <span class="price">₱{{ getDishPrice(order.dish) * order.quantity }}</span>
-          <button type="button" @click="removeOrder(index)">Remove</button>
+          <button type="button" class="remove-btn" @click="removeOrder(index)">Remove</button>
         </div>
         <button type="button" class="add-btn" @click="addOrder">Add Another Dish</button>
       </div>
 
-      <br>
+      <br />
       <label for="extras">Additional Feedback:</label>
       <input type="text" id="extras" v-model="extras" placeholder="E.g. extra rice, calamansi, vinegar" />
 
       <h3 class="total-amount">Total Amount: ₱{{ totalAmount }}</h3>
 
-      <button type="submit" class="order-btn">Order Now</button>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+      <div class="button-container">
+        <button type="submit" class="order-btn">Order Now</button>
+      </div>
     </form>
   </section>
 </template>
@@ -57,23 +63,13 @@ export default {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
+      phone_number: "",
       address: "",
       paymentMode: "",
       orders: [{ dish: null, quantity: 1 }],
       extras: "",
-      dishes: [
-        { id: 1, name: "Amigo 1A Pecho (with Iced Tea)", price: 129 },
-        { id: 2, name: "Amigo 1B Paa (with Iced Tea)", price: 119 },
-        { id: 3, name: "Chikn Pecho", price: 129 },
-        { id: 4, name: "Chikn Paa", price: 119 },
-        { id: 5, name: "Laswa", price: 80 },
-        { id: 6, name: "Bangus Whole", price: 210 },
-        { id: 7, name: "Sisig", price: 150 },
-        { id: 8, name: "Batchoy", price: 90 },
-        { id: 9, name: "Pork BBQ", price: 40 },
-        { id: 10, name: "Pork Liempo", price: 160 }
-      ]
+      dishes: [],
+      errorMessage: ""
     };
   },
   computed: {
@@ -84,8 +80,14 @@ export default {
     }
   },
   methods: {
-    getDishPrice(dish) {
-      return dish ? dish.price : 0;
+    async fetchDishes() {
+      try {
+        const { data, error } = await supabase.from("dishes").select("d_id, dish_name, price, stock_quantity");
+        if (error) throw error;
+        this.dishes = data;
+      } catch (error) {
+        console.error("Error fetching dishes:", error);
+      }
     },
     addOrder() {
       this.orders.push({ dish: null, quantity: 1 });
@@ -93,60 +95,94 @@ export default {
     removeOrder(index) {
       this.orders.splice(index, 1);
     },
-    async submitOrder() {
+    getDishPrice(dish) {
+      return dish ? dish.price : 0;
+    },
+    async placeOrder() {
+      this.errorMessage = "";
+      if (!this.firstName || !this.lastName || !this.email || !this.phone_number || !this.address || !this.paymentMode) {
+        this.errorMessage = "Please fill in all required fields.";
+        return;
+      }
+      if (this.orders.length === 0 || this.orders.some(order => !order.dish)) {
+        this.errorMessage = "Please add at least one dish to your order.";
+        return;
+      }
+      if (!confirm("Are you sure you want to place this order?")) {
+        return;
+      }
+
       try {
-        if (!this.firstName || !this.lastName || !this.email || !this.phone || !this.address || !this.paymentMode || this.orders.some(order => !order.dish)) {
-          alert("Please fill in all fields!");
-          return;
-        }
-        
-        console.log("Submitting order...");
+        const { data: customerData, error: customerError } = await supabase.from("customer").insert([
+          {
+            first_name: this.firstName,
+            last_name: this.lastName,
+            email: this.email,
+            phone_number: this.phone_number,
+            address: this.address
+          }
+        ]).select();
+        if (customerError) throw customerError;
+        const customerId = customerData[0].c_id;
 
-        const { data: customer, error: custError } = await supabase
-          .from('customer')
-          .insert([{ first_name: this.firstName, last_name: this.lastName, email: this.email, phone_number: this.phone, address: this.address }])
-          .select();
-
-        if (custError) throw custError;
-        if (!customer || customer.length === 0) throw new Error("Customer insertion failed");
-        const customerId = customer[0].c_id;
-
-        const { data: order, error: orderError } = await supabase
-          .from('cust_orders')
-          .insert([{ c_id: customerId, total_amount: this.totalAmount, admin_id: 1, payment_id: null, order_date: new Date().toISOString() }])
-          .select();
-
+        const { data: orderData, error: orderError } = await supabase.from("cust_orders").insert([
+          {
+            c_id: customerId,
+            pay_method: this.paymentMode,
+            total_amount: this.totalAmount,
+            status: "Pending"
+          }
+        ]).select();
         if (orderError) throw orderError;
-        const orderId = order[0].o_id;
+        const orderId = orderData[0].o_id;
 
-        const { data: payment, error: paymentError } = await supabase
-          .from('payment')
-          .insert([{ o_id: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: 'Pending' }])
-          .select();
+        for (const order of this.orders) {
+          await supabase.from("order_details").insert([
+            {
+              o_id: orderId,
+              d_id: order.dish.d_id,
+              quantity: order.quantity
+            }
+          ]);
+          await supabase.from("dishes").update({ stock_quantity: order.dish.stock_quantity - order.quantity }).eq("d_id", order.dish.d_id);
+        }
 
-        if (paymentError) throw paymentError;
-        const paymentId = payment[0].pay_id;
-
-        await supabase.from('cust_orders').update({ payment_id: paymentId }).eq('o_id', orderId);
-
-        for (let orderItem of this.orders) {
-          await supabase.from('order_details').insert([{ order_id: orderId, dish_id: orderItem.dish.id, quantity: orderItem.quantity }]);
+        if (this.extras) {
+          await supabase.from("cust_feedback").insert([
+            {
+              c_id: customerId,
+              feedback_text: this.extras
+            }
+          ]);
         }
 
         alert("Order placed successfully!");
+        this.resetForm();
       } catch (error) {
         console.error("Error placing order:", error);
-        alert("Failed to place order. Please try again.");
+        this.errorMessage = "Something went wrong. Please try again.";
       }
+    },
+    resetForm() {
+      this.firstName = "";
+      this.lastName = "";
+      this.email = "";
+      this.phone_number = "";
+      this.address = "";
+      this.paymentMode = "";
+      this.orders = [{ dish: null, quantity: 1 }];
+      this.extras = "";
+      this.errorMessage = "";
     }
+  },
+  async created() {
+    await this.fetchDishes();
   }
 };
 </script>
 
 
-
 <style>
-/* Updated background styling */
 .orders-container {
   background-color: #f8f9fa;
   padding: 30px;
@@ -180,43 +216,58 @@ input, select {
   flex-wrap: wrap;
 }
 
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
 button {
-  background-color: #006400;
   color: white;
   border: none;
-  padding: 10px;
+  padding: 12px 18px;
   cursor: pointer;
   border-radius: 5px;
+  flex: 1;
+  margin: 5px;
+  text-align: center;
+  font-size: 18px; /* Enlarged font size for main buttons */
 }
 
-button:hover {
+.confirm-btn {
+  background-color: #d37800;
+}
+.confirm-btn:hover {
+  background-color: #ad6200;
+}
+
+.order-btn {
+  background-color: #006400;
+}
+.order-btn:hover {
   background-color: #004d00;
-}
-
-.price {
-  font-weight: bold;
-}
-
-.total-amount {
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 15px;
 }
 
 .add-btn {
   background-color: #004d99;
 }
-
 .add-btn:hover {
   background-color: #003366;
 }
 
-.order-btn {
-  background-color: #006400;
-  font-size: 18px;
+/* Keep Remove button as default size */
+.remove-btn {
+  background-color: #c50808;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.remove-btn:hover {
+  background-color: #960606;
 }
 
-.order-btn:hover {
-  background-color: #004d00;
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>

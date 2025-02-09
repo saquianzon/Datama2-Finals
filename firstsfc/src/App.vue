@@ -4,6 +4,10 @@
     <Hero />
     <Menu @order="openOrders" />
     <Orders v-if="showOrders" :selectedDish="selectedDish" />
+    <br><br>
+    <TrackOrders/>
+    <Delivery />
+    <br><br>
     <Footer />
   </div>
 </template>
@@ -14,10 +18,12 @@ import NavBar from './components/NavBar.vue';
 import Hero from './components/Hero.vue';
 import Menu from './components/Menu.vue';
 import Orders from './components/Orders.vue';
+import TrackOrders from './components/TrackOrders.vue';
+import Delivery from './components/Delivery.vue';
 import Footer from './components/Footer.vue';
 
 export default {
-  components: { NavBar, Hero, Menu, Orders, Footer },
+  components: { NavBar, Hero, Menu, Orders, TrackOrders, Delivery, Footer },
   setup() {
     const showOrders = ref(false);
     const selectedDish = ref('');
