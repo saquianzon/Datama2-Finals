@@ -2,10 +2,10 @@
   <section id="orders" class="orders-container">
     <h2>Place Your Order</h2>
     <form @submit.prevent="submitOrder">
-      <label for="name">First Name:</label>
+      <label for="firstName">First Name:</label>
       <input type="text" id="firstName" v-model="firstName" required />
 
-      <label for="name">Last Name:</label>
+      <label for="lastName">Last Name:</label>
       <input type="text" id="lastName" v-model="lastName" required />
 
       <label for="phone">Phone:</label>
@@ -25,7 +25,7 @@
         <h3>Your Order</h3>
         <div v-for="(order, index) in orders" :key="index" class="order-item">
           <select v-model="order.dish">
-            <option v-for="dish in dishes" :key="dish.id" :value="dish.name">{{ dish.name }}</option>
+            <option v-for="dish in dishes" :key="dish.id" :value="dish">{{ dish.name }}</option>
           </select>
           <input type="number" v-model="order.quantity" min="1" required />
           <span class="price">₱{{ getDishPrice(order.dish) * order.quantity }}</span>
@@ -47,20 +47,17 @@
 </template>
 
 <script>
+import { supabase } from '../supabase';
+
 export default {
-  props: {
-    selectedDish: {
-      type: String,
-      default: ""
-    }
-  },
   data() {
     return {
-      name: "",
+      firstName: "",
+      lastName: "",
       phone: "",
       address: "",
-      paymentMode: "", // New Payment Mode Field
-      orders: [{ dish: this.selectedDish || "", quantity: 1 }],
+      paymentMode: "",
+      orders: [{ dish: "", quantity: 1 }],
       extras: "",
       dishes: [
         { id: 1, name: "Amigo 1A Pecho (with Iced Tea)", price: 129 },
@@ -79,7 +76,7 @@ export default {
   computed: {
     totalAmount() {
       return this.orders.reduce((sum, order) => {
-        const dish = this.dishes.find(d => d.name === order.dish);
+        const dish = this.dishes.find(d => d.name === order.dish.name);
         return sum + (dish ? dish.price * order.quantity : 0);
       }, 0);
     }
@@ -95,25 +92,70 @@ export default {
     removeOrder(index) {
       this.orders.splice(index, 1);
     },
-    submitOrder() {
-      if (!this.firstName || !this.lastName || !this.phone || !this.address || !this.paymentMode || this.orders.some(order => !order.dish)) {
-        alert("Please fill in all fields!");
-        return;
+    async submitOrder() {
+      try {
+        if (!this.firstName || !this.lastName || !this.phone || !this.address || !this.paymentMode || this.orders.some(order => !order.dish)) {
+          alert("Please fill in all fields!");
+          return;
+        }
+
+        // Insert Customer
+        const { data: customer, error: custError } = await supabase
+          .from('Customer')
+          .insert([{ 
+            first_name: this.firstName, 
+            last_name: this.lastName, 
+            phone_number: this.phone, 
+            address: this.address 
+          }])
+          .select();
+
+        if (custError) throw custError;
+        const customerId = customer[0].c_ID;
+
+        // Insert Order
+        const { data: order, error: orderError } = await supabase
+          .from('Cust_Orders')
+          .insert([{ c_ID: customerId, total_amount: this.totalAmount, admin_ID: 1 }])
+          .select();
+
+        if (orderError) throw orderError;
+        const orderId = order[0].o_ID;
+
+        // Insert Payment
+        const { error: paymentError } = await supabase
+          .from('Payment')
+          .insert([{ o_ID: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: 'Pending' }]);
+
+        if (paymentError) throw paymentError;
+
+        // Insert Order Details
+        for (let order of this.orders) {
+          const dish = this.dishes.find(d => d.name === order.dish.name);
+          if (dish) {
+            await supabase
+              .from('Order_Details')
+              .insert([{ order_id: orderId, dish_id: dish.id, quantity: order.quantity }]);
+          }
+        }
+
+        alert("Order placed successfully!");
+      } catch (error) {
+        console.error("Error placing order:", error);
+        alert("Failed to place order. Please try again.");
       }
-      console.log("Order placed:", this.firstName, this.lastName, this.phone, this.address, this.paymentMode, this.orders, this.extras);
-      alert("Order placed successfully!");
     }
   }
 };
 </script>
 
-<<style>
+<style>
 /* Updated background styling */
 .orders-container {
   background-color: #f8f9fa;
   padding: 30px;
   border-radius: 10px;
-  max-width: 700px; /* Increased width */
+  max-width: 700px;
   margin: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -139,7 +181,7 @@ input, select {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap; /* Ensures buttons don’t overflow */
+  flex-wrap: wrap;
 }
 
 button {
