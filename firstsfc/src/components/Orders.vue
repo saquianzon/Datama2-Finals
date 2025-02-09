@@ -1,7 +1,7 @@
 <template>
   <section id="orders" class="orders-container">
     <h2>Place Your Order</h2>
-    <form @submit.prevent="placeOrder">
+    <form @submit.prevent="submitOrder">
       <label for="firstName">First Name:</label>
       <input type="text" id="firstName" v-model="firstName" required />
 
@@ -11,8 +11,8 @@
       <label for="email">Email:</label>
       <input type="email" id="email" v-model="email" required />
 
-      <label for="phone_number">Phone:</label>
-      <input type="text" id="phone_number" v-model="phone_number" required />
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" v-model="phone" required />
 
       <label for="address">Address:</label>
       <input type="text" id="address" v-model="address" required />
@@ -29,7 +29,7 @@
         <div v-for="(order, index) in orders" :key="index" class="order-item">
           <select v-model="order.dish">
             <option v-for="dish in dishes" :key="dish.d_id" :value="dish">
-              {{ dish.dish_name }} - ₱{{ dish.price }} (Stock: {{ dish.stock_quantity }})
+              {{ dish.dish_name }} - ₱{{ dish.price }}
             </option>
           </select>
           <input type="number" v-model="order.quantity" min="1" required />
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from "@/lib/supabaseClient";
 
 export default {
   data() {
@@ -63,13 +63,13 @@ export default {
       firstName: "",
       lastName: "",
       email: "",
-      phone_number: "",
+      phone: "",
       address: "",
       paymentMode: "",
       orders: [{ dish: null, quantity: 1 }],
       extras: "",
       dishes: [],
-      errorMessage: ""
+      errorMessage: "",
     };
   },
   computed: {
@@ -80,6 +80,15 @@ export default {
     }
   },
   methods: {
+    getDishPrice(dish) {
+      return dish ? dish.price : 0;
+    },
+    addOrder() {
+      this.orders.push({ dish: null, quantity: 1 });
+    },
+    removeOrder(index) {
+      this.orders.splice(index, 1);
+    },
     async fetchDishes() {
       try {
         const { data, error } = await supabase.from("dishes").select("d_id, dish_name, price, stock_quantity");
@@ -89,90 +98,85 @@ export default {
         console.error("Error fetching dishes:", error);
       }
     },
-    addOrder() {
-      this.orders.push({ dish: null, quantity: 1 });
-    },
-    removeOrder(index) {
-      this.orders.splice(index, 1);
-    },
-    getDishPrice(dish) {
-      return dish ? dish.price : 0;
-    },
-    async placeOrder() {
+    async submitOrder() {
       this.errorMessage = "";
-      if (!this.firstName || !this.lastName || !this.email || !this.phone_number || !this.address || !this.paymentMode) {
+
+      if (!this.firstName || !this.lastName || !this.email || !this.phone || !this.address || !this.paymentMode) {
         this.errorMessage = "Please fill in all required fields.";
         return;
       }
+
       if (this.orders.length === 0 || this.orders.some(order => !order.dish)) {
         this.errorMessage = "Please add at least one dish to your order.";
         return;
       }
-      if (!confirm("Are you sure you want to place this order?")) {
-        return;
-      }
 
       try {
-        const { data: customerData, error: customerError } = await supabase.from("customer").insert([
-          {
-            first_name: this.firstName,
-            last_name: this.lastName,
-            email: this.email,
-            phone_number: this.phone_number,
-            address: this.address
-          }
-        ]).select();
-        if (customerError) throw customerError;
-        const customerId = customerData[0].c_id;
+        // Step 1: Insert Customer if not exists
+        let { data: existingCustomer } = await supabase
+          .from("customer")
+          .select("c_id")
+          .eq("email", this.email)
+          .single();
 
-        const { data: orderData, error: orderError } = await supabase.from("cust_orders").insert([
-          {
-            c_id: customerId,
-            pay_method: this.paymentMode,
-            total_amount: this.totalAmount,
-            status: "Pending"
-          }
-        ]).select();
-        if (orderError) throw orderError;
-        const orderId = orderData[0].o_id;
+        let customerId = existingCustomer ? existingCustomer.c_id : null;
 
-        for (const order of this.orders) {
-          await supabase.from("order_details").insert([
-            {
-              o_id: orderId,
-              d_id: order.dish.d_id,
-              quantity: order.quantity
-            }
-          ]);
-          await supabase.from("dishes").update({ stock_quantity: order.dish.stock_quantity - order.quantity }).eq("d_id", order.dish.d_id);
+        if (!customerId) {
+          const { data: newCustomer, error: customerError } = await supabase
+            .from("customer")
+            .insert([{ first_name: this.firstName, last_name: this.lastName, email: this.email, phone_number: this.phone, address: this.address }])
+            .select("c_id")
+            .single();
+
+          if (customerError) throw customerError;
+          customerId = newCustomer.c_id;
         }
 
-        if (this.extras) {
-          await supabase.from("cust_feedback").insert([
-            {
-              c_id: customerId,
-              feedback_text: this.extras
-            }
-          ]);
+        // Step 2: Insert Order
+        const { data: newOrder, error: orderError } = await supabase
+          .from("cust_orders")
+          .insert([{ c_id: customerId, total_amount: this.totalAmount, admin_id: 1 }])
+          .select("o_id")
+          .single();
+
+        if (orderError) throw orderError;
+
+        const orderId = newOrder.o_id;
+
+        // Step 3: Insert Order Details
+        const orderDetails = this.orders.map(order => ({
+          order_id: orderId,
+          dish_id: order.dish.d_id,
+          quantity: order.quantity
+        }));
+
+        await supabase.from("order_details").insert(orderDetails);
+
+        // Step 4: Insert Payment
+        const { data: newPayment, error: paymentError } = await supabase
+          .from("payment")
+          .insert([{ o_id: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }])
+          .select("pay_id")
+          .single();
+
+        if (paymentError) throw paymentError;
+
+        // Step 5: Update Payment ID in Order
+        await supabase.from("cust_orders").update({ payment_id: newPayment.pay_id }).eq("o_id", orderId);
+
+        // Step 6: Reduce Stock Quantity
+        for (let order of this.orders) {
+          await supabase
+            .from("dishes")
+            .update({ stock_quantity: order.dish.stock_quantity - order.quantity })
+            .eq("d_id", order.dish.d_id);
         }
 
         alert("Order placed successfully!");
-        this.resetForm();
       } catch (error) {
         console.error("Error placing order:", error);
-        this.errorMessage = "Something went wrong. Please try again.";
+        this.errorMessage = "Failed to place order. Please try again.";
       }
-    },
-    resetForm() {
-      this.firstName = "";
-      this.lastName = "";
-      this.email = "";
-      this.phone_number = "";
-      this.address = "";
-      this.paymentMode = "";
-      this.orders = [{ dish: null, quantity: 1 }];
-      this.extras = "";
-      this.errorMessage = "";
     }
   },
   async created() {
