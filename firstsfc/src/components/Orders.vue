@@ -112,7 +112,6 @@ export default {
       }
 
       try {
-        // Step 1: Insert Customer if not exists
         let { data: existingCustomer } = await supabase
           .from("customer")
           .select("c_id")
@@ -132,7 +131,6 @@ export default {
           customerId = newCustomer.c_id;
         }
 
-        // Step 2: Insert Order
         const { data: newOrder, error: orderError } = await supabase
           .from("cust_orders")
           .insert([{ c_id: customerId, total_amount: this.totalAmount, admin_id: 1 }])
@@ -143,7 +141,6 @@ export default {
 
         const orderId = newOrder.o_id;
 
-        // Step 3: Insert Order Details
         const orderDetails = this.orders.map(order => ({
           order_id: orderId,
           dish_id: order.dish.d_id,
@@ -152,7 +149,6 @@ export default {
 
         await supabase.from("order_details").insert(orderDetails);
 
-        // Step 4: Insert Payment
         const { data: newPayment, error: paymentError } = await supabase
           .from("payment")
           .insert([{ o_id: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }])
@@ -161,15 +157,23 @@ export default {
 
         if (paymentError) throw paymentError;
 
-        // Step 5: Update Payment ID in Order
         await supabase.from("cust_orders").update({ payment_id: newPayment.pay_id }).eq("o_id", orderId);
 
-        // Step 6: Reduce Stock Quantity
         for (let order of this.orders) {
           await supabase
             .from("dishes")
             .update({ stock_quantity: order.dish.stock_quantity - order.quantity })
             .eq("d_id", order.dish.d_id);
+        }
+
+        console.log("Order ID for feedback:", orderId);
+        const { data: feedbackData, error: feedbackError } = await supabase .from("cust_feedback")
+        .insert([{ o_id: orderId, feedback_text: this.extras }]);
+        
+        if (feedbackError) {
+          console.error("Error inserting feedback:", feedbackError);
+        } else {
+          console.log("Feedback inserted successfully:", feedbackData);
         }
 
         alert("Order placed successfully!");
