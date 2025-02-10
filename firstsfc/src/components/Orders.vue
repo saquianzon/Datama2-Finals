@@ -9,13 +9,13 @@
       <input type="text" id="lastName" v-model="lastName" required />
 
       <label for="email">Email:</label>
-      <input type="email" id="email" v-model="email" required />
+      <input type="email" id="email" required v-model="email" />
 
       <label for="phone">Phone:</label>
-      <input type="text" id="phone" v-model="phone" required />
+      <input type="text" id="phone" required v-model="phone" />
 
       <label for="address">Address:</label>
-      <input type="text" id="address" v-model="address" required />
+      <input type="text" id="address" required v-model="address" />
 
       <label for="paymentMode">Mode of Payment:</label>
       <select id="paymentMode" v-model="paymentMode" required>
@@ -59,6 +59,7 @@
 
     <div v-if="orderPlaced && paymentMode === 'GCash'">
       <button @click="confirmPayment" class="confirm-payment-btn">Confirm Payment</button>
+      <button @click="cancelOrder" class="cancel-payment-btn">Cancel Order</button>
     </div>
   </section>
 </template>
@@ -112,17 +113,14 @@ export default {
     },
     async submitOrder() {
       this.errorMessage = "";
-
       if (!this.firstName || !this.lastName || !this.email || !this.phone || !this.address || !this.paymentMode) {
         this.errorMessage = "Please fill in all required fields.";
         return;
       }
-
       if (this.orders.length === 0 || this.orders.some(order => !order.dish)) {
         this.errorMessage = "Please add at least one dish to your order.";
         return;
       }
-
       try {
         let { data: existingCustomer } = await supabase.from("customer").select("c_id").eq("email", this.email).single();
         let customerId = existingCustomer ? existingCustomer.c_id : null;
@@ -140,31 +138,23 @@ export default {
 
         const { data: newPayment } = await supabase.from("payment").insert([{ o_id: this.orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }]).select("pay_id").single();
         this.paymentId = newPayment.pay_id;
-        
-        if (this.paymentId) {
-          await supabase.from("cust_orders").update({ payment_id: this.paymentId }).eq("o_id", this.orderId);
-        }
+        await supabase.from("cust_orders").update({ payment_id: this.paymentId }).eq("o_id", this.orderId);
 
         await supabase.from("delivery").insert([{ o_id: this.orderId, deli_status: "In Transit", pay_id: this.paymentId, admin_id: 1 }]);
-
-        for (let order of this.orders) {
-          await supabase.from("dishes").update({ stock_quantity: order.dish.stock_quantity - order.quantity }).eq("d_id", order.dish.d_id);
-        }
-
         await supabase.from("cust_feedback").insert([{ o_id: this.orderId, remark_text: this.extras }]);
-
+        
         this.orderPlaced = true;
-
         alert("Order placed successfully!");
       } catch (error) {
         console.error("Error placing order:", error);
         this.errorMessage = "Failed to place order. Please try again.";
       }
     },
-    async confirmPayment() {
+    async cancelOrder() {
       if (!this.orderId) return;
-      await supabase.from("payment").update({ pay_status: "Completed" }).eq("o_id", this.orderId);
-      alert("Payment confirmed successfully!");
+      await supabase.from("cust_orders").delete().eq("o_id", this.orderId);
+      this.orderPlaced = false;
+      alert("Order canceled successfully!");
     }
   },
   async created() {
