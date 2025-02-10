@@ -113,69 +113,30 @@ export default {
       }
 
       try {
-        let { data: existingCustomer } = await supabase
-          .from("customer")
-          .select("c_id")
-          .eq("email", this.email)
-          .single();
-
+        let { data: existingCustomer } = await supabase.from("customer").select("c_id").eq("email", this.email).single();
         let customerId = existingCustomer ? existingCustomer.c_id : null;
 
         if (!customerId) {
-          const { data: newCustomer, error: customerError } = await supabase
-            .from("customer")
-            .insert([{ first_name: this.firstName, last_name: this.lastName, email: this.email, phone_number: this.phone, address: this.address }])
-            .select("c_id")
-            .single();
-
-          if (customerError) throw customerError;
+          const { data: newCustomer } = await supabase.from("customer").insert([{ first_name: this.firstName, last_name: this.lastName, email: this.email, phone_number: this.phone, address: this.address }]).select("c_id").single();
           customerId = newCustomer.c_id;
         }
 
-        const { data: newOrder, error: orderError } = await supabase
-          .from("cust_orders")
-          .insert([{ c_id: customerId, total_amount: this.totalAmount, admin_id: 1 }])
-          .select("o_id")
-          .single();
-
-        if (orderError) throw orderError;
-
+        const { data: newOrder } = await supabase.from("cust_orders").insert([{ c_id: customerId, total_amount: this.totalAmount, admin_id: 1 }]).select("o_id").single();
         const orderId = newOrder.o_id;
 
-        const orderDetails = this.orders.map(order => ({
-          order_id: orderId,
-          dish_id: order.dish.d_id,
-          quantity: order.quantity
-        }));
-
+        const orderDetails = this.orders.map(order => ({ order_id: orderId, dish_id: order.dish.d_id, quantity: order.quantity }));
         await supabase.from("order_details").insert(orderDetails);
 
-        const { data: newPayment, error: paymentError } = await supabase
-          .from("payment")
-          .insert([{ o_id: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }])
-          .select("pay_id")
-          .single();
+        const { data: newPayment } = await supabase.from("payment").insert([{ o_id: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }]).select("pay_id").single();
+        const payId = newPayment.pay_id;
 
-        if (paymentError) throw paymentError;
-
-        await supabase.from("cust_orders").update({ payment_id: newPayment.pay_id }).eq("o_id", orderId);
+        await supabase.from("delivery").insert([{ o_id: orderId, deli_status: "Pending", pay_id: payId, admin_id: 1 }]);
 
         for (let order of this.orders) {
-          await supabase
-            .from("dishes")
-            .update({ stock_quantity: order.dish.stock_quantity - order.quantity })
-            .eq("d_id", order.dish.d_id);
+          await supabase.from("dishes").update({ stock_quantity: order.dish.stock_quantity - order.quantity }).eq("d_id", order.dish.d_id);
         }
 
-        console.log("Order ID for feedback:", orderId);
-        const { data: feedbackData, error: feedbackError } = await supabase .from("cust_feedback")
-        .insert([{ o_id: orderId, remark_text: this.extras }]);
-        
-        if (feedbackError) {
-          console.error("Error inserting feedback:", feedbackError);
-        } else {
-          console.log("Feedback inserted successfully:", feedbackData);
-        }
+        await supabase.from("cust_feedback").insert([{ o_id: orderId, remark_text: this.extras }]);
 
         alert("Order placed successfully!");
       } catch (error) {
@@ -189,6 +150,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style>
