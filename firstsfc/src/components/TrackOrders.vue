@@ -182,51 +182,109 @@ export default {
 </script>
 
 <style>
-.success-message {
-  color: green;
+
+#track-orders .success-message {
+  color: #28a745;
+  font-weight: bold;
   margin-top: 10px;
+  text-align: center;
 }
 
-.orders-container {
+#track-orders .orders-container {
   max-width: 600px;
   margin: auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease-in-out;
 }
-.button-container {
+
+#track-orders .orders-container:hover {
+  transform: scale(1.02);
+}
+
+#track-orders .button-container {
+  text-align: center;
+  margin-top: 15px;
+}
+
+#track-orders .order-btn, 
+#track-orders .cancel-btn {
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s ease-in-out;
+}
+
+#track-orders .order-btn {
+  background: #007bff;
+  color: white;
+}
+
+#track-orders .order-btn:hover {
+  background: #0056b3;
+}
+
+#track-orders .cancel-btn {
+  background: #dc3545;
+  color: white;
+  margin-top: 12px;
+}
+
+#track-orders .cancel-btn:hover {
+  background: #a71d2a;
+}
+
+#track-orders .error-message {
+  color: #dc3545;
+  font-weight: bold;
   text-align: center;
   margin-top: 10px;
 }
-.order-btn {
-  padding: 10px 20px;
-  background: #28a745;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-.cancel-btn {
-  padding: 10px 20px;
-  background: #dc3545;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-table {
+
+#track-orders table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 15px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-td {
-  padding: 5px;
+
+#track-orders td {
+  padding: 10px;
   border: 1px solid #ddd;
 }
+
+#track-orders tr:nth-child(even) {
+  background: #f1f1f1;
+}
+
+#track-orders h2, 
+#track-orders h3, 
+#track-orders h4 {
+  text-align: center;
+  color: #333;
+}
+
+#track-orders ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+#track-orders li {
+  background: #e9ecef;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+
 </style>

@@ -131,37 +131,109 @@ export default {
 
 <style>
 .delivery-container {
-  background-color: #f8f9fa;
-  padding: 30px;
-  border-radius: 10px;
+  background-color: #ffffff;
+  padding: 45px;
+  border-radius: 12px;
   max-width: 600px;
   margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
 }
 
-input {
+.delivery-container h2 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.delivery-container label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #555;
+  text-align: left;
+}
+
+.delivery-container input {
   width: 100%;
-  padding: 8px;
-  margin: 10px 0;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 15px;
 }
 
-button {
+.delivery-container button {
   background-color: #006400;
   color: white;
   border: none;
   padding: 10px;
+  font-size: 16px;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 8px;
+  transition: background 0.3s;
 }
 
-button:hover {
+.delivery-container button:hover {
   background-color: #004d00;
+}
+
+.delivery-details {
+  margin-top: 20px;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.order-table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.order-table td:first-child {
+  font-weight: bold;
+}
+
+.dish-list {
+  list-style: none;
+  padding: 10px;
+  background: #f1f3f5;
+  border-radius: 8px;
+  margin-top: 10px;
 }
 
 .error-message {
   color: red;
   margin-top: 10px;
+  font-weight: bold;
+}
+
+.delivered-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s;
+  margin-top: 15px;
+}
+
+.delivered-btn:hover {
+  background-color: #218838;
 }
 </style>
+

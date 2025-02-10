@@ -46,8 +46,8 @@
       </div>
 
       <br />
-      <label for="extras">Additional Feedback:</label>
-      <input type="text" id="extras" v-model="extras" placeholder="E.g. extra rice, calamansi, vinegar" />
+      <label for="extras">Additional Notes:</label>
+      <input type="text" id="extras" v-model="extras" placeholder="Instructions for the Kitchen (e.g. no utensils required, etc.)" />
 
       <h3 class="total-amount">Total Amount: ₱{{ totalAmount }}</h3>
 
@@ -240,11 +240,12 @@ select {
 .button-container {
   margin-top: 20px;
   display: flex;
-  gap: 10px;
+  justify-content: center;
+  gap: 15px; /* Adjusts spacing between buttons */
+  flex-wrap: wrap;
 }
 
 button {
-  flex: 1;
   padding: 12px;
   border: none;
   border-radius: 8px;
@@ -252,6 +253,7 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  min-width: 150px; /* Ensures consistent button width */
 }
 
 .order-btn {
@@ -328,7 +330,7 @@ select {
   background-color: white;
   font-size: 16px;
   cursor: pointer;
-  appearance: none; /* Removes default dropdown styling */
+  appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='gray'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
