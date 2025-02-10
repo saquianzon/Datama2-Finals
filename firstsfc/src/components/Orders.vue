@@ -168,7 +168,7 @@ export default {
 
         console.log("Order ID for feedback:", orderId);
         const { data: feedbackData, error: feedbackError } = await supabase .from("cust_feedback")
-        .insert([{ o_id: orderId, feedback_text: this.extras }]);
+        .insert([{ o_id: orderId, remark_text: this.extras }]);
         
         if (feedbackError) {
           console.error("Error inserting feedback:", feedbackError);
