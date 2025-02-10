@@ -56,7 +56,7 @@ export default {
 
       try {
         const { data: customer, error: custError } = await supabase
-          .from('customer') // Fixed capitalization
+          .from('customer')
           .select('c_id')
           .eq('email', this.email)
           .eq('first_name', this.firstName)
@@ -74,9 +74,9 @@ export default {
             o_id, 
             total_amount, 
             order_date,
-            payment!cust_orders_o_id_fkey(pay_status),
-            delivery!cust_orders_o_id_fkey(deli_status),
-            order_details!order_details_order_id_fkey(dish_id, quantity)
+            payment(pay_status),
+            delivery(deli_status),
+            order_details(dish_id, quantity)
           `)
           .eq('c_id', customer.c_id)
           .order('order_date', { ascending: false })
@@ -89,21 +89,28 @@ export default {
 
         const order = orders[0];
 
-        const { data: dishesData } = await supabase
-          .from('Dishes')
-          .select('d_ID, dish_name')
-          .in('d_ID', order.Order_Details.map(d => d.dish_id));
+        const dishIds = order.order_details.map(d => d.dish_id);
+        const { data: dishesData, error: dishesError } = await supabase
+          .from('dishes')
+          .select('d_id, dish_name')
+          .in('d_id', dishIds);
 
-        order.dishes = order.Order_Details.map(d => ({
-          name: dishesData.find(dish => dish.d_ID === d.dish_id)?.dish_name || 'Unknown Dish',
+        if (dishesError) {
+          console.error("Error fetching dishes:", dishesError);
+          this.errorMessage = "Error fetching dish details.";
+          return;
+        }
+
+        order.dishes = order.order_details.map(d => ({
+          name: dishesData.find(dish => dish.d_id === d.dish_id)?.dish_name || 'Unknown Dish',
           quantity: d.quantity
         }));
 
         this.order = {
-          o_id: order.o_ID,
+          o_id: order.o_id,
           total_amount: order.total_amount,
-          pay_status: order.payment?.[0]?.pay_status || 'Unknown',
-          delivery_status: order.delivery?.[0]?.deli_status || 'Pending',
+          pay_status: order.payment?.pay_status || 'Unknown',
+          delivery_status: order.delivery?.deli_status || 'Pending',
           dishes: order.dishes
         };
       } catch (err) {
