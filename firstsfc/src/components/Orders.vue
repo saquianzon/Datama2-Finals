@@ -1,6 +1,6 @@
 <template>
   <section id="orders" class="orders-container">
-    <h2>Enter Your Details to Place Your Order</h2>
+    <h2>Enter Your Details to Place an Order</h2>
     <form @submit.prevent="submitOrder">
       <label for="firstName">First Name:</label>
       <input type="text" id="firstName" v-model="firstName" required />
@@ -179,105 +179,165 @@ export default {
 
 
 <style>
-.payment-image {
-  width: 150px;
-  margin: 10px 0;
-}
-.confirm-payment-btn {
-  background-color: green;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-
-
 .orders-container {
-  background-color: #f8f9fa;
-  padding: 30px;
-  border-radius: 10px;
-  max-width: 700px;
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 600px;
   margin: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  text-align: left;
+  margin: 10px 0 5px;
 }
 
 input, select {
-  margin: 10px 0;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
   width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  background: #fff;
 }
 
 .order-items {
-  margin: 15px 0;
+  margin: 20px 0;
 }
 
 .order-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
 }
 
+.order-item select, .order-item input {
+  flex: 1;
+}
+
+.order-item .price {
+  font-weight: bold;
+  color: #d32f2f;
+}
+
 .button-container {
-  display: flex;
-  justify-content: space-between;
   margin-top: 20px;
+  display: flex;
+  gap: 10px;
 }
 
 button {
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  cursor: pointer;
-  border-radius: 5px;
   flex: 1;
-  margin: 5px;
-  text-align: center;
-  font-size: 18px; /* Enlarged font size for main buttons */
-}
-
-.confirm-btn {
-  background-color: #d37800;
-}
-.confirm-btn:hover {
-  background-color: #ad6200;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .order-btn {
-  background-color: #006400;
+  background: #d32f2f;
+  color: white;
 }
 .order-btn:hover {
-  background-color: #004d00;
+  background: #b71c1c;
 }
 
 .add-btn {
-  background-color: #004d99;
+  background: #0288d1;
+  color: white;
 }
 .add-btn:hover {
-  background-color: #003366;
+  background: #01579b;
 }
 
-/* Keep Remove button as default size */
 .remove-btn {
-  background-color: #c50808;
-  padding: 8px 12px;
+  background: #757575;
+  color: white;
+  padding: 8px;
   font-size: 14px;
 }
 .remove-btn:hover {
-  background-color: #960606;
+  background: #424242;
+}
+
+.total-amount {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.payment-image {
+  width: 180px;
+  margin: 15px 0;
+}
+
+.confirm-payment-btn {
+  background: #2e7d32;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.confirm-payment-btn:hover {
+  background: #1b5e20;
+}
+
+.cancel-payment-btn {
+  background: #d32f2f;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.cancel-payment-btn:hover {
+  background: #b71c1c;
 }
 
 .error-message {
   color: red;
   font-weight: bold;
   margin-top: 10px;
+}
+
+select {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  background-color: white;
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none; /* Removes default dropdown styling */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='gray'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 15px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 </style>
