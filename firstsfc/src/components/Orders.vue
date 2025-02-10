@@ -24,6 +24,10 @@
         <option value="GCash">GCash</option>
       </select>
 
+      <div v-if="paymentMode === 'GCash'">
+        <img src="/images/qr.png" alt="GCash Payment" class="payment-image" />
+      </div>
+
       <div class="order-items">
         <h3>Your Order</h3>
         <div v-for="(order, index) in orders" :key="index" class="order-item">
@@ -52,6 +56,10 @@
         <button type="submit" class="order-btn">Order Now</button>
       </div>
     </form>
+
+    <div v-if="orderPlaced && paymentMode === 'GCash'">
+      <button @click="confirmPayment" class="confirm-payment-btn">Confirm Payment</button>
+    </div>
   </section>
 </template>
 
@@ -71,6 +79,9 @@ export default {
       extras: "",
       dishes: [],
       errorMessage: "",
+      orderPlaced: false,
+      orderId: null,
+      paymentId: null,
     };
   },
   computed: {
@@ -122,27 +133,38 @@ export default {
         }
 
         const { data: newOrder } = await supabase.from("cust_orders").insert([{ c_id: customerId, total_amount: this.totalAmount, admin_id: 1 }]).select("o_id").single();
-        const orderId = newOrder.o_id;
+        this.orderId = newOrder.o_id;
 
-        const orderDetails = this.orders.map(order => ({ order_id: orderId, dish_id: order.dish.d_id, quantity: order.quantity }));
+        const orderDetails = this.orders.map(order => ({ order_id: this.orderId, dish_id: order.dish.d_id, quantity: order.quantity }));
         await supabase.from("order_details").insert(orderDetails);
 
-        const { data: newPayment } = await supabase.from("payment").insert([{ o_id: orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }]).select("pay_id").single();
-        const payId = newPayment.pay_id;
+        const { data: newPayment } = await supabase.from("payment").insert([{ o_id: this.orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }]).select("pay_id").single();
+        this.paymentId = newPayment.pay_id;
+        
+        if (this.paymentId) {
+          await supabase.from("cust_orders").update({ payment_id: this.paymentId }).eq("o_id", this.orderId);
+        }
 
-        await supabase.from("delivery").insert([{ o_id: orderId, deli_status: "Pending", pay_id: payId, admin_id: 1 }]);
+        await supabase.from("delivery").insert([{ o_id: this.orderId, deli_status: "In Transit", pay_id: this.paymentId, admin_id: 1 }]);
 
         for (let order of this.orders) {
           await supabase.from("dishes").update({ stock_quantity: order.dish.stock_quantity - order.quantity }).eq("d_id", order.dish.d_id);
         }
 
-        await supabase.from("cust_feedback").insert([{ o_id: orderId, remark_text: this.extras }]);
+        await supabase.from("cust_feedback").insert([{ o_id: this.orderId, remark_text: this.extras }]);
+
+        this.orderPlaced = true;
 
         alert("Order placed successfully!");
       } catch (error) {
         console.error("Error placing order:", error);
         this.errorMessage = "Failed to place order. Please try again.";
       }
+    },
+    async confirmPayment() {
+      if (!this.orderId) return;
+      await supabase.from("payment").update({ pay_status: "Completed" }).eq("o_id", this.orderId);
+      alert("Payment confirmed successfully!");
     }
   },
   async created() {
@@ -154,6 +176,20 @@ export default {
 
 
 <style>
+.payment-image {
+  width: 150px;
+  margin: 10px 0;
+}
+.confirm-payment-btn {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+
+
 .orders-container {
   background-color: #f8f9fa;
   padding: 30px;
