@@ -28,6 +28,7 @@
         <h3>Your Order</h3>
         <div v-for="(order, index) in orders" :key="index" class="order-item">
           <select v-model="order.dish">
+            <option value="">Select a meal</option>
             <option v-for="dish in dishes" :key="dish.d_id" :value="dish">
               {{ dish.dish_name }} - ₱{{ dish.price }}
             </option>
