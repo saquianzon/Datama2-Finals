@@ -56,7 +56,7 @@ export default {
           .from('cust_orders')
           .select(`
             o_id, total_amount, 
-            payment(pay_status), 
+            payment(pay_status, pay_method), 
             delivery(deli_status, deli_date)
           `)
           .eq('c_id', customer.c_id)
@@ -74,6 +74,7 @@ export default {
           o_id: order.o_id,
           total_amount: order.total_amount,
           pay_status: order.payment?.pay_status || 'Unknown',
+          pay_method: order.payment?.pay_method || 'Unknown',
           deli_status: order.delivery?.deli_status || 'Pending',
           deli_date: order.delivery?.deli_date || 'Not available'
         };
@@ -112,8 +113,13 @@ export default {
             .eq('d_id', order.dish_id);
         }
 
+        if (this.delivery.pay_method === 'Cash') {
+          await supabase.from('payment').update({ pay_status: 'Completed' }).eq('o_id', this.delivery.o_id);
+          this.delivery.pay_status = 'Completed';
+        }
+
         this.delivery.deli_status = 'Delivered';
-        alert("Delivery marked as completed, and stock updated.");
+        alert("Delivery marked as completed, stock updated, and payment status updated if applicable.");
       } catch (err) {
         console.error("Error marking delivery as completed:", err);
         this.error = "Failed to update delivery status.";
