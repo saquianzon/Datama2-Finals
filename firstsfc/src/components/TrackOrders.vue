@@ -145,19 +145,32 @@ export default {
       }
 
       try {
-        const { error } = await supabase
+        // Update payment status
+        const { error: paymentError } = await supabase
           .from('payment')
           .update({ pay_status: 'Failed' })
           .eq('o_id', this.order.o_id);
 
-        if (error) {
-          console.error("Error cancelling order:", error);
+        if (paymentError) {
+          console.error("Error cancelling payment:", paymentError);
           this.errorMessage = "Failed to cancel payment.";
           return;
         }
 
+        // Update delivery status
+        const { error: deliveryError } = await supabase
+          .from('delivery')
+          .update({ deli_status: 'Cancelled' })
+          .eq('o_id', this.order.o_id);
+
+        if (deliveryError) {
+          console.error("Error updating delivery status:", deliveryError);
+          this.errorMessage = "Failed to update delivery status.";
+          return;
+        }
+
         this.order.pay_status = 'Failed';
-        this.order.deli_status = 'Cancelled';
+        this.order.delivery_status = 'Cancelled';
         this.orderCancelledMessage = "Your order has been successfully cancelled.";
       } catch (err) {
         console.error("Error cancelling order:", err);
