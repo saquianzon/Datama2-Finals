@@ -46,6 +46,7 @@
     </div>
     
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <p v-if="orderCancelledMessage" class="success-message">{{ orderCancelledMessage }}</p>
   </section>
 </template>
 
@@ -59,7 +60,8 @@ export default {
       lastName: '',
       email: '',
       order: null,
-      errorMessage: ''
+      errorMessage: '',
+      orderCancelledMessage: ''
     };
   },
   methods: {
@@ -70,6 +72,7 @@ export default {
       }
       this.errorMessage = '';
       this.order = null;
+      this.orderCancelledMessage = '';
 
       try {
         const { data: customer, error: custError } = await supabase
@@ -149,12 +152,13 @@ export default {
 
         if (error) {
           console.error("Error cancelling order:", error);
-          this.errorMessage = "Failed to cancel order.";
+          this.errorMessage = "Failed to cancel payment.";
           return;
         }
 
         this.order.pay_status = 'Failed';
         this.order.deli_status = 'Cancelled';
+        this.orderCancelledMessage = "Your order has been successfully cancelled.";
       } catch (err) {
         console.error("Error cancelling order:", err);
         this.errorMessage = "Something went wrong. Please try again.";
@@ -165,6 +169,11 @@ export default {
 </script>
 
 <style>
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
+
 .orders-container {
   max-width: 600px;
   margin: auto;
