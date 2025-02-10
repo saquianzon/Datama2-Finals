@@ -9,7 +9,7 @@
       <input type="text" id="lastName" v-model="lastName" required />
 
       <label for="email">Email:</label>
-      <input type="email" id="email" v-model="email" required />
+      <input type="email" id="email" required v-model="email" />
 
       <div class="button-container">
         <button type="submit" class="order-btn">Check Status</button>
@@ -18,14 +18,31 @@
     
     <div v-if="order" class="order-details">
       <h3>Order Details</h3>
-      <p><strong>Order ID:</strong> {{ order.o_id }}</p>
-      <p><strong>Total Amount:</strong> ₱{{ order.total_amount }}</p>
-      <p><strong>Payment Status:</strong> {{ order.pay_status }}</p>
-      <p><strong>Delivery Status:</strong> {{ order.delivery_status }}</p>
+      <table>
+        <tr>
+          <td><strong>Order ID:</strong></td>
+          <td>{{ order.o_id }}</td>
+        </tr>
+        <tr>
+          <td><strong>Total Amount:</strong></td>
+          <td>₱{{ order.total_amount }}</td>
+        </tr>
+        <tr>
+          <td><strong>Payment Status:</strong></td>
+          <td>{{ order.pay_status }}</td>
+        </tr>
+        <tr>
+          <td><strong>Delivery Status:</strong></td>
+          <td>{{ order.delivery_status }}</td>
+        </tr>
+      </table>
+      
       <h4>Ordered Dishes:</h4>
       <ul>
         <li v-for="dish in order.dishes" :key="dish.id">{{ dish.name }} - Qty: {{ dish.quantity }}</li>
       </ul>
+      
+      <button v-if="order.pay_status === 'Pending'" @click="cancelOrder" class="cancel-btn">Cancel Order</button>
     </div>
     
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -117,6 +134,31 @@ export default {
         console.error("Error fetching order details:", err);
         this.errorMessage = "Something went wrong. Please try again.";
       }
+    },
+    async cancelOrder() {
+      if (!this.order || this.order.pay_status !== 'Pending') {
+        this.errorMessage = "Only pending orders can be canceled.";
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('payment')
+          .update({ pay_status: 'Failed' })
+          .eq('o_id', this.order.o_id);
+
+        if (error) {
+          console.error("Error cancelling order:", error);
+          this.errorMessage = "Failed to cancel order.";
+          return;
+        }
+
+        this.order.pay_status = 'Failed';
+        this.order.deli_status = 'Cancelled';
+      } catch (err) {
+        console.error("Error cancelling order:", err);
+        this.errorMessage = "Something went wrong. Please try again.";
+      }
     }
   }
 };
@@ -143,8 +185,26 @@ export default {
   cursor: pointer;
   border-radius: 5px;
 }
+.cancel-btn {
+  padding: 10px 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 10px;
+}
 .error-message {
   color: red;
   margin-top: 10px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+td {
+  padding: 5px;
+  border: 1px solid #ddd;
 }
 </style>
