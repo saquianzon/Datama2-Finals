@@ -150,6 +150,17 @@ export default {
         this.errorMessage = "Failed to place order. Please try again.";
       }
     },
+    async confirmPayment() {
+      if (!this.paymentId) return;
+
+      try {
+        await supabase.from("payment").update({ pay_status: "Completed" }).eq("pay_id", this.paymentId);
+        alert("Payment confirmed successfully!");
+      } catch (error) {
+        console.error("Error confirming payment:", error);
+        alert("Failed to confirm payment. Please try again.");
+      }
+    },
     async cancelOrder() {
       if (!this.orderId) return;
       await supabase.from("cust_orders").delete().eq("o_id", this.orderId);
@@ -162,6 +173,7 @@ export default {
   }
 };
 </script>
+
 
 
 
