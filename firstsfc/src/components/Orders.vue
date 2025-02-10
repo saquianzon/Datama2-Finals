@@ -1,6 +1,6 @@
 <template>
   <section id="orders" class="orders-container">
-    <h2>Place Your Order</h2>
+    <h2>Enter Your Details to Place Your Order</h2>
     <form @submit.prevent="submitOrder">
       <label for="firstName">First Name:</label>
       <input type="text" id="firstName" v-model="firstName" required />
@@ -25,6 +25,7 @@
       </select>
 
       <div v-if="paymentMode === 'GCash'">
+        <h3>Scan the QR code below:</h3>
         <img src="/images/qr.png" alt="GCash Payment" class="payment-image" />
       </div>
 
