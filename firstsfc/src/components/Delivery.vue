@@ -1,6 +1,6 @@
 <template>
   <section class="delivery-container">
-    <h2>Track Your Delivery</h2>
+    <h2>Order Delivery Status</h2>
     <label for="email">Enter Your Email:</label>
     <input type="email" v-model="email" required />
     <button @click="fetchDeliveryDetails">Check Status</button>
@@ -130,110 +130,118 @@ export default {
 </script>
 
 <style>
+
 .delivery-container {
-  background-color: #ffffff;
-  padding: 45px;
-  border-radius: 12px;
-  max-width: 600px;
-  margin: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #f9f9f9;
+  padding: 40px;
+  border-radius: 16px;
+  max-width: 500px;
+  margin: 50px auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   text-align: center;
+  font-family: 'Poppins', sans-serif;
 }
 
 .delivery-container h2 {
-  font-size: 22px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 20px;
 }
 
 .delivery-container label {
   display: block;
   font-size: 14px;
   font-weight: 500;
-  margin-bottom: 5px;
-  color: #555;
+  margin-bottom: 8px;
+  color: #444;
   text-align: left;
 }
 
 .delivery-container input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
   font-size: 16px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  transition: 0.3s ease-in-out;
+}
+
+.delivery-container input:focus {
+  border-color: #07806f;
+  box-shadow: 0 0 5px rgba(7, 128, 111, 0.3);
+  outline: none;
 }
 
 .delivery-container button {
-  background-color: #006400;
+  background: linear-gradient(135deg, #07806f, #045d50);
   color: white;
   border: none;
-  padding: 10px;
+  padding: 12px 20px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.3s;
+  border-radius: 10px;
+  transition: 0.3s;
+  width: 100%;
 }
 
 .delivery-container button:hover {
-  background-color: #004d00;
+  background: #ccae27;
 }
 
 .delivery-details {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: left;
   margin-top: 20px;
 }
 
-.order-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.delivery-details h3 {
+  font-size: 20px;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-.order-table tr {
-  border-bottom: 1px solid #ddd;
+.delivery-details p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
 }
 
-.order-table td {
-  padding: 10px;
-  text-align: left;
-}
-
-.order-table td:first-child {
-  font-weight: bold;
-}
-
-.dish-list {
-  list-style: none;
-  padding: 10px;
-  background: #f1f3f5;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-  font-weight: bold;
+.delivery-details p strong {
+  color: #07806f;
 }
 
 .delivered-btn {
-  background-color: #28a745;
+  background: #28a745;
+  width: 100%;
   color: white;
-  border: none;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
+  border-radius: 10px;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.3s;
+  border: none;
+  transition: 0.3s;
   margin-top: 15px;
+  font-weight: 600;
 }
 
 .delivered-btn:hover {
-  background-color: #218838;
+  background: #218838;
 }
-</style>
 
+.error-message {
+  color: #d9534f;
+  font-weight: 600;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+
+</style>

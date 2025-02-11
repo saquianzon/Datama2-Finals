@@ -42,65 +42,101 @@ const orderDish = (dishName) => {
 .menu {
   text-align: center;
   padding: 50px 20px;
+  background: #f8f8f8;
+}
+
+.menu h2 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.menu p {
+  font-size: 16px;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto 30px;
 }
 
 .menu-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .menu-item {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 300px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+
+.menu-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .menu-image {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
 }
 
 .menu-details {
-  padding: 15px;
+  padding: 20px;
 }
 
 .menu-name {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
+  color: #222;
 }
 
 .menu-description {
   font-size: 14px;
   color: #666;
-  margin: 5px 0;
+  margin: 8px 0 12px;
 }
 
 .menu-price {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
-  color: #000;
+  color: #6a0dad;
+  margin-bottom: 12px;
 }
 
 .order-button {
   background: #6a0dad;
   color: white;
-  padding: 8px 15px;
+  padding: 10px 18px;
+  font-size: 14px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.3s ease-in-out;
 }
 
 .order-button:hover {
   background: #520b9b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .menu-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .menu-item {
+    width: 90%;
+  }
 }
 </style>
