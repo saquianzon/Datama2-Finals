@@ -11,14 +11,20 @@
       <div class="footer-section">
         <h3>Address</h3>
         <p>245 P. Ocampo Ave., Corner Primo Rivera St., Brgy. Lapaz, Makati, Philippines</p>
-        <p><strong>Contact Phone (Makati):</strong> 0977-039-160</p>
-        <p><strong>Contact Phone (Cebu):</strong> 0991-209-5031</p>
+        <p><strong>Business Hours:</strong> 11am - 10pm</p>
+        <p><strong>Contact Phone:</strong> 0977-039-160</p>
+        <p><strong>Email:</strong> dodoysgrill@gmail.com</p>
+        <p><strong>Facebook Page:</strong> 
+          <a href="https://www.facebook.com/dodoysgrill" target="_blank" rel="noopener noreferrer">
+            Dodoy's Grill House
+          </a>
+        </p>
       </div>
+
 
       <div class="footer-section">
         <h3>About Us</h3>
         <p>We assure you will enjoy the authentic Chicken Inasal and other Ilonggo delicacies with the true taste of Bacolod in every bite! Kaon nata!</p>
-        <p>Come visit us in Makati or Cebu!</p>
       </div>
     </div>
   </footer>
@@ -62,4 +68,15 @@ p {
   margin-right: 10px;
   filter: brightness(1.2);
 }
+
+.footer-section a {
+    color: #ffc400; /* Change this to your desired color */
+    text-decoration: none; /* Removes the underline */
+}
+
+.footer-section a:hover {
+    color: #71dafa; /* Change color when hovered */
+    text-decoration: underline; /* Adds underline on hover */
+}
+
 </style>

@@ -7,7 +7,6 @@
     <br><br>
     <TrackOrders/>
     <br><br>
-    <br><br>
     <Delivery/>
     <br><br>
     <Footer />
