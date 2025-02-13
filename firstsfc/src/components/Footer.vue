@@ -32,7 +32,7 @@
 
 <style>
 footer {
-  background: url('/images/footer-bg.jpg') center/cover no-repeat, #0a0a0a;
+  background: #0a0a0a;
   color: white;
   padding: 30px 0;
 }
