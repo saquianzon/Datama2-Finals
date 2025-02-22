@@ -34,8 +34,8 @@
         <div v-for="(order, index) in orders" :key="index" class="order-item">
           <select v-model="order.dish">
             <option value="">Select a meal</option>
-            <option v-for="dish in dishes" :key="dish.d_id" :value="dish">
-              {{ dish.dish_name }} - ₱{{ dish.price }}
+            <option v-for="dish in dishes" :key="dish.d_id" :value="dish" :disabled="dish.stock_quantity === 0">
+              {{ dish.dish_name }} - ₱{{ dish.price }} <span v-if="dish.stock_quantity === 0">(Out of Stock)</span>
             </option>
           </select>
           <input type="number" v-model="order.quantity" min="1" required />
@@ -138,7 +138,7 @@ export default {
         await supabase.from("order_details").insert(orderDetails);
 
         const dishNames = this.orders.map(order => order.dish.dish_name).join(", ");
-        await supabase.from("cust_orders").update({ dish_summary: dishNames }).eq("o_id", this.orderId);
+        await supabase.from("cust_orders").update({ dish_summary: this.orders.map(order => order.dish.dish_name).join(", ") }).eq("o_id", this.orderId);
 
 
         const { data: newPayment } = await supabase.from("payment").insert([{ o_id: this.orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }]).select("pay_id").single();
@@ -147,7 +147,7 @@ export default {
 
         await supabase.from("delivery").insert([{ o_id: this.orderId, deli_status: "In Transit", pay_id: this.paymentId, address: this.address, admin_id: 1 }]);
         await supabase.from("cust_feedback").insert([{ o_id: this.orderId, remark_text: this.extras }]);
-        
+
         this.orderPlaced = true;
         alert("Order placed successfully!");
       } catch (error) {
