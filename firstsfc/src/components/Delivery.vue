@@ -12,6 +12,7 @@
       <p><strong>Payment Status:</strong> {{ delivery.pay_status }}</p>
       <p><strong>Delivery Status:</strong> {{ delivery.deli_status }}</p>
       <p><strong>Delivery Date:</strong> {{ delivery.deli_date }}</p>
+      <p><strong>Customer Address:</strong> {{ delivery.address }}</p>
       
       <button v-if="delivery.deli_status !== 'Delivered'" @click="markAsDelivered">Mark as Delivered</button>
     </div>
@@ -57,7 +58,7 @@ export default {
           .select(`
             o_id, total_amount, 
             payment(pay_status, pay_method), 
-            delivery(deli_status, deli_date)
+            delivery(deli_status, deli_date, address)
           `)
           .eq('c_id', customer.c_id)
           .order('order_date', { ascending: false })
@@ -76,7 +77,8 @@ export default {
           pay_status: order.payment?.pay_status || 'Unknown',
           pay_method: order.payment?.pay_method || 'Unknown',
           deli_status: order.delivery?.deli_status || 'Pending',
-          deli_date: order.delivery?.deli_date || 'Not available'
+          deli_date: order.delivery?.deli_date || 'Not available',
+          address: order.delivery?.address || 'Not available'
         };
       } catch (err) {
         console.error("Error fetching delivery details:", err);

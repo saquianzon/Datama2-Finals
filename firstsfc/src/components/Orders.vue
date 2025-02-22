@@ -137,11 +137,15 @@ export default {
         const orderDetails = this.orders.map(order => ({ order_id: this.orderId, dish_id: order.dish.d_id, quantity: order.quantity }));
         await supabase.from("order_details").insert(orderDetails);
 
+        const dishNames = this.orders.map(order => order.dish.dish_name).join(", ");
+        await supabase.from("cust_orders").update({ dish_summary: dishNames }).eq("o_id", this.orderId);
+
+
         const { data: newPayment } = await supabase.from("payment").insert([{ o_id: this.orderId, pay_method: this.paymentMode, amount_paid: this.totalAmount, pay_status: "Pending" }]).select("pay_id").single();
         this.paymentId = newPayment.pay_id;
         await supabase.from("cust_orders").update({ payment_id: this.paymentId }).eq("o_id", this.orderId);
 
-        await supabase.from("delivery").insert([{ o_id: this.orderId, deli_status: "In Transit", pay_id: this.paymentId, admin_id: 1 }]);
+        await supabase.from("delivery").insert([{ o_id: this.orderId, deli_status: "In Transit", pay_id: this.paymentId, address: this.address, admin_id: 1 }]);
         await supabase.from("cust_feedback").insert([{ o_id: this.orderId, remark_text: this.extras }]);
         
         this.orderPlaced = true;
