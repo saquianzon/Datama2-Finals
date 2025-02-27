@@ -1,5 +1,4 @@
 <template>
-  <div class="page-container">
   <section class="delivery-container">
     <h2>Order Delivery Status</h2>
     <label for="email">Enter Your Email:</label>
@@ -20,7 +19,6 @@
 
     <p v-if="error" class="error-message">{{ error }}</p>
   </section>
-  </div>
 </template>
 
 <script>

@@ -1,5 +1,4 @@
 <template>
-  <div class="page-container">
   <section id="orders" class="orders-container">
     <h2>Enter Your Details to Place an Order</h2>
     <form @submit.prevent="submitOrder">
@@ -64,7 +63,6 @@
       <button @click="cancelOrder" class="cancel-payment-btn">Cancel Order</button>
     </div>
   </section>
-  </div>
 </template>
 
 <script>

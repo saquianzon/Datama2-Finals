@@ -1,5 +1,4 @@
 <template>
-  <div class="page-container">
   <section id="track-orders" class="orders-container">
     <h2>Track Your Order</h2>
     <form @submit.prevent="fetchOrderDetails">
@@ -49,7 +48,6 @@
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     <p v-if="orderCancelledMessage" class="success-message">{{ orderCancelledMessage }}</p>
   </section>
-  </div>
 </template>
 
 <script>

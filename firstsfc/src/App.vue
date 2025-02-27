@@ -3,6 +3,8 @@
     <NavBar />
     <Hero />
     <Menu @order="openOrders" />
+
+    <div class="page-container">
     <Orders v-if="showOrders" :selectedDish="selectedDish" />
     <br><br>
     <TrackOrders/>
@@ -10,6 +12,7 @@
     <Delivery/>
     <br><br>
     <Footer />
+    </div>
   </div>
 </template>
 
@@ -43,5 +46,38 @@ export default {
 #app {
   font-family: Arial, sans-serif;
   text-align: center;
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.sidebar {
+  width: 12%;
+  background-color: #e9a30e;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+}
+
+.left {
+  left: 0;
+}
+
+.right {
+  right: 0;
+}
+
+.content-container {
+  flex: 1;
+  max-width: 80%;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
