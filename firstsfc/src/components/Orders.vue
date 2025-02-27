@@ -346,4 +346,46 @@ select:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
+
+/* Page Container */
+.page-container {
+  position: relative;
+  min-height: 100vh;
+  background-color: #f9f9f9; /* Background */
+  overflow: hidden;
+}
+
+/* Content Styling */
+.content-container {
+  position: relative;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 80%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+/* Left and Right Sidebars */
+.page-container::before,
+.page-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 12%; /* Adjust for sidebar size */
+  height: 100%;
+  background-color: #ff5c00; /* Change to your preferred sidebar color */
+  z-index: 1;
+}
+
+/* Left Sidebar */
+.page-container::before {
+  left: 0;
+}
+
+/* Right Sidebar */
+.page-container::after {
+  right: 0;
+}
 </style>
