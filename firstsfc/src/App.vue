@@ -3,13 +3,17 @@
     <NavBar />
     <Hero />
     <Menu @order="openOrders" />
-    <Orders v-if="showOrders" :selectedDish="selectedDish" />
-    <br><br>
-    <TrackOrders/>
-    <br><br>
-    <Delivery/>
-    <br><br>
-    <Footer />
+    
+    <!-- Container with border -->
+    <div class="content-container">
+      <Orders v-if="showOrders" :selectedDish="selectedDish" />
+      <br><br>
+      <TrackOrders />
+      <br><br>
+      <Delivery />
+      <br><br>
+      <Footer />
+    </div>
   </div>
 </template>
 
@@ -43,5 +47,16 @@ export default {
 #app {
   font-family: Arial, sans-serif;
   text-align: center;
+}
+
+/* Add border around the whole section after Menu.vue */
+.content-container {
+  border: 3px solid #007bff; /* Blue border */
+  border-radius: 10px; /* Rounded corners */
+  padding: 20px; /* Add spacing inside */
+  margin: 20px auto; /* Center and add margin */
+  max-width: 80%; /* Set a max width */
+  background-color: #f9f9f9; /* Light background */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
 </style>
