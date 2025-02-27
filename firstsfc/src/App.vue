@@ -12,8 +12,8 @@
       <br><br>
       <Delivery />
       <br><br>
-      <Footer />
     </div>
+    <Footer />
   </div>
 </template>
 
@@ -44,19 +44,47 @@ export default {
 </script>
 
 <style>
+/* Full-page background effect */
 #app {
   font-family: Arial, sans-serif;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #f9f9f9; /* Main background */
 }
 
-/* Add border around the whole section after Menu.vue */
+/* Content container */
 .content-container {
-  border: 3px solid #007bff; /* Blue border */
-  border-radius: 10px; /* Rounded corners */
-  padding: 20px; /* Add spacing inside */
-  margin: 20px auto; /* Center and add margin */
-  max-width: 80%; /* Set a max width */
-  background-color: #f9f9f9; /* Light background */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  position: relative;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 80%;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
+
+/* Left and Right Sidebars */
+#app::before,
+#app::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 12%; /* Adjust width for sidebar size */
+  height: 100%;
+  background-color: #dda427; /* Change to your preferred sidebar color */
+  z-index: 1;
+}
+
+/* Left Sidebar */
+#app::before {
+  left: 0;
+}
+
+/* Right Sidebar */
+#app::after {
+  right: 0;
+}
+
 </style>
