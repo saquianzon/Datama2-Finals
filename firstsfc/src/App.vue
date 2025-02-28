@@ -3,12 +3,14 @@
     <NavBar />
     <Hero />
     <Menu @order="openOrders" />
+    <div class="page-container">
     <Orders v-if="showOrders" :selectedDish="selectedDish" />
     <br><br>
     <TrackOrders/>
     <br><br>
     <Delivery/>
     <br><br>
+    </div>
     <Footer />
   </div>
 </template>
@@ -43,5 +45,13 @@ export default {
 #app {
   font-family: Arial, sans-serif;
   text-align: center;
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #e9c37e;
 }
 </style>
