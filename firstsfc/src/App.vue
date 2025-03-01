@@ -48,6 +48,6 @@ export default {
 }
 
 .page-container {
-  background-color: #dfdede;
+  background-color: #f7f8ed;
 }
 </style>
