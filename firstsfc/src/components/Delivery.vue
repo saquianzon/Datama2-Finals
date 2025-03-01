@@ -121,7 +121,7 @@ export default {
         }
 
         this.delivery.deli_status = 'Delivered';
-        alert("Delivery marked as completed, stock updated, and payment status updated if applicable.");
+        alert("Thank you for using our services! Enjoy your meal!");
       } catch (err) {
         console.error("Error marking delivery as completed:", err);
         this.error = "Failed to update delivery status.";
