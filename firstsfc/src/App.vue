@@ -3,14 +3,12 @@
     <NavBar />
     <Hero />
     <Menu @order="openOrders" />
-    <div class="page-container">
     <Orders v-if="showOrders" :selectedDish="selectedDish" />
     <br><br>
     <TrackOrders/>
     <br><br>
     <Delivery/>
     <br><br>
-    </div>
     <Footer />
   </div>
 </template>
