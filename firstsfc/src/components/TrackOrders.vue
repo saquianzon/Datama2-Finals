@@ -314,7 +314,7 @@ export default {
   top: 0;
   width: 12%; /* Adjust for sidebar size */
   height: 100%;
-  background-color: #ff5c00; /* Change to your preferred sidebar color */
+  background-color: #fac278; /* Change to your preferred sidebar color */
   z-index: 1;
 }
 
