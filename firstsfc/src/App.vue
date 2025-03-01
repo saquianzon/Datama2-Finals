@@ -48,8 +48,6 @@ export default {
 }
 
 .page-container {
-  display: flex;
-  min-height: 100vh;
   background-color: #e9c37e;
 }
 </style>
